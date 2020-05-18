@@ -79,6 +79,23 @@ public class AuthorResource {
         LOGGER.log(Level.INFO, "AuthorResource createAuthor: output: {0}", authorDTO);
         return authorDTO;
     }
+    
+    /**
+     * Crea un nuevo autor con la informacion que se recibe en el cuerpo de la
+     * petición y se regresa un objeto identico con un id auto-generado por la
+     * base de datos.
+     *
+     * @param authorD {@link AuthorDetailDTO} - El autor que se desea guardar.
+     * @return JSON {@link AuthorDTO} - El autor guardado con el atributo id
+     * autogenerado.
+     */
+    @POST
+    public AuthorDetailDTO createAuthor(AuthorDetailDTO authorD) {
+        LOGGER.log(Level.INFO, "AuthorDetailResource createAuthorDetail: input: {0}", authorD);
+        AuthorDetailDTO authorDTO = new AuthorDetailDTO(authorLogic.createAuthor(authorD.toEntity()));
+        LOGGER.log(Level.INFO, "AuthorDetailResource createAuthorDetail: output: {0}", authorDTO);
+        return authorDTO;
+    }
 
     /**
      * Busca y devuelve todos los autores que existen en la aplicacion.

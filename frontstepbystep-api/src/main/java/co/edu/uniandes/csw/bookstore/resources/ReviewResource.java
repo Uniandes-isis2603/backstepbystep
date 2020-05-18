@@ -136,7 +136,7 @@ public class ReviewResource {
     @Path("{reviewsId: \\d+}")
     public ReviewDTO updateReview(@PathParam("booksId") Long booksId, @PathParam("reviewsId") Long reviewsId, ReviewDTO review) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "ReviewResource updateReview: input: booksId: {0} , reviewsId: {1} , review:{2}", new Object[]{booksId, reviewsId, review});
-        if (reviewsId.equals(review.getId())) {
+        if (!reviewsId.equals(review.getId())) {
             throw new BusinessLogicException("Los ids del Review no coinciden.");
         }
         ReviewEntity entity = reviewLogic.getReview(booksId, reviewsId);
