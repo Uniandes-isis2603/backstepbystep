@@ -90,6 +90,26 @@ public class BookResource {
         LOGGER.log(Level.INFO, "BookResource createBook: output: {0}", nuevoBookDTO);
         return nuevoBookDTO;
     }
+    
+    /**
+     * Crea un nuevo libro con la informacion que se recibe en el cuerpo de la
+     * petición y se regresa un objeto identico con un id auto-generado por la
+     * base de datos.
+     *
+     * @param bookD {@link BookDetailDTO} - El libro que se desea guardar.
+     * @return JSON {@link BookDetailDTO} - El libro guardado con el atributo id
+     * autogenerado.
+     * @throws BusinessLogicException {@link BusinessLogicExceptionMapper} -
+     * Error de lógica que se genera cuando ya existe el libro o el isbn es
+     * inválido o si la editorial ingresada es invalida.
+     */
+    @POST
+    public BookDetailDTO createBook(BookDetailDTO bookD) throws BusinessLogicException {
+        LOGGER.log(Level.INFO, "BookResource createBookDetail: input: {0}", bookD);
+        BookDetailDTO nuevoBookDTO = new BookDetailDTO(bookLogic.createBook(bookD.toEntity()));
+        LOGGER.log(Level.INFO, "BookResource createBookDetail: output: {0}", nuevoBookDTO);
+        return nuevoBookDTO;
+    }
 
     /**
      * Busca y devuelve todos los libros que existen en la aplicacion.
