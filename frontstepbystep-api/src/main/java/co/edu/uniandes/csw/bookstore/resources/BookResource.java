@@ -104,6 +104,7 @@ public class BookResource {
      * inválido o si la editorial ingresada es invalida.
      */
     @POST
+    @Path("{books: \\d+}")
     public BookDetailDTO createBook(BookDetailDTO bookD) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "BookResource createBookDetail: input: {0}", bookD);
         BookDetailDTO nuevoBookDTO = new BookDetailDTO(bookLogic.createBook(bookD.toEntity()));

@@ -90,6 +90,7 @@ public class AuthorResource {
      * autogenerado.
      */
     @POST
+    @Path("{author: \\d+}")
     public AuthorDetailDTO createAuthorDetail(AuthorDetailDTO authorD) {
         LOGGER.log(Level.INFO, "AuthorDetailResource createAuthorDetail: input: {0}", authorD);
         AuthorDetailDTO authorDTO = new AuthorDetailDTO(authorLogic.createAuthor(authorD.toEntity()));
