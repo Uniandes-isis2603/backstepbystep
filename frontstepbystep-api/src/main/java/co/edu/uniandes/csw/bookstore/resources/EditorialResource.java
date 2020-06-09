@@ -62,6 +62,9 @@ public class EditorialResource {
 
     @Inject
     private EditorialLogic editorialLogic; // Variable para acceder a la lógica de la aplicación. Es una inyección de dependencias.
+    
+    private static final String MSG1 = "El recurso /editorials/";
+    private static final String MSG2 = " no existe.";
 
     /**
      * Crea una nueva editorial con la informacion que se recibe en el cuerpo de
@@ -117,7 +120,7 @@ public class EditorialResource {
         LOGGER.log(Level.INFO, "EditorialResource getEditorial: input: {0}", editorialsId);
         EditorialEntity editorialEntity = editorialLogic.getEditorial(editorialsId);
         if (editorialEntity == null) {
-            throw new WebApplicationException("El recurso /editorials/" + editorialsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + editorialsId + MSG2, 404);
         }
         EditorialDetailDTO detailDTO = new EditorialDetailDTO(editorialEntity);
         LOGGER.log(Level.INFO, "EditorialResource getEditorial: output: {0}", detailDTO);
@@ -143,7 +146,7 @@ public class EditorialResource {
         LOGGER.log(Level.INFO, "EditorialResource updateEditorial: input: id:{0} , editorial: {1}", new Object[]{editorialsId, editorial});
         editorial.setId(editorialsId);
         if (editorialLogic.getEditorial(editorialsId) == null) {
-            throw new WebApplicationException("El recurso /editorials/" + editorialsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + editorialsId + MSG2, 404);
         }
         EditorialDetailDTO detailDTO = new EditorialDetailDTO(editorialLogic.updateEditorial(editorialsId, editorial.toEntity()));
         LOGGER.log(Level.INFO, "EditorialResource updateEditorial: output: {0}", detailDTO);
@@ -166,7 +169,7 @@ public class EditorialResource {
     public void deleteEditorial(@PathParam("editorialsId") Long editorialsId) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "EditorialResource deleteEditorial: input: {0}", editorialsId);
         if (editorialLogic.getEditorial(editorialsId) == null) {
-            throw new WebApplicationException("El recurso /editorials/" + editorialsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + editorialsId + MSG2, 404);
         }
         editorialLogic.deleteEditorial(editorialsId);
         LOGGER.info("EditorialResource deleteEditorial: output: void");
@@ -189,7 +192,7 @@ public class EditorialResource {
     @Path("{editorialsId: \\d+}/books")
     public Class<EditorialBooksResource> getEditorialBooksResource(@PathParam("editorialsId") Long editorialsId) {
         if (editorialLogic.getEditorial(editorialsId) == null) {
-            throw new WebApplicationException("El recurso /editorials/" + editorialsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + editorialsId + MSG2, 404);
         }
         return EditorialBooksResource.class;
     }

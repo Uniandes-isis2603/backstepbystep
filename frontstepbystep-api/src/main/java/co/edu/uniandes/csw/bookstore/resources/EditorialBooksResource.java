@@ -64,6 +64,8 @@ public class EditorialBooksResource {
     @Inject
     private BookLogic bookLogic; // Variable para acceder a la lógica de la aplicación. Es una inyección de dependencias.
 
+    private static final String MSG2 = " no existe.";
+
     /**
      * Guarda un libro dentro de una editorial con la informacion que recibe el
      * la URL. Se devuelve el libro que se guarda en la editorial.
@@ -81,7 +83,7 @@ public class EditorialBooksResource {
     public BookDTO addBook(@PathParam("editorialsId") Long editorialsId, @PathParam("booksId") Long booksId) {
         LOGGER.log(Level.INFO, "EditorialBooksResource addBook: input: editorialsID: {0} , booksId: {1}", new Object[]{editorialsId, booksId});
         if (bookLogic.getBook(booksId) == null) {
-            throw new WebApplicationException("El recurso /books/" + booksId + " no existe.", 404);
+            throw new WebApplicationException("El recurso /books/" + booksId + MSG2, 404);
         }
         BookDTO bookDTO = new BookDTO(editorialBooksLogic.addBook(booksId, editorialsId));
         LOGGER.log(Level.INFO, "EditorialBooksResource addBook: output: {0}", bookDTO);
@@ -123,7 +125,7 @@ public class EditorialBooksResource {
     public BookDetailDTO getBook(@PathParam("editorialsId") Long editorialsId, @PathParam("booksId") Long booksId) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "EditorialBooksResource getBook: input: editorialsID: {0} , booksId: {1}", new Object[]{editorialsId, booksId});
         if (bookLogic.getBook(booksId) == null) {
-            throw new WebApplicationException("El recurso /editorials/" + editorialsId + "/books/" + booksId + " no existe.", 404);
+            throw new WebApplicationException("El recurso /editorials/" + editorialsId + "/books/" + booksId + MSG2, 404);
         }
         BookDetailDTO bookDetailDTO = new BookDetailDTO(editorialBooksLogic.getBook(editorialsId, booksId));
         LOGGER.log(Level.INFO, "EditorialBooksResource getBook: output: {0}", bookDetailDTO);
@@ -147,7 +149,7 @@ public class EditorialBooksResource {
         LOGGER.log(Level.INFO, "EditorialBooksResource replaceBooks: input: editorialsId: {0} , books: {1}", new Object[]{editorialsId, books});
         for (BookDetailDTO book : books) {
             if (bookLogic.getBook(book.getId()) == null) {
-                throw new WebApplicationException("El recurso /books/" + book.getId() + " no existe.", 404);
+                throw new WebApplicationException("El recurso /books/" + book.getId() + MSG2, 404);
             }
         }
         List<BookDetailDTO> listaDetailDTOs = booksListEntity2DTO(editorialBooksLogic.replaceBooks(editorialsId, booksListDTO2Entity(books)));

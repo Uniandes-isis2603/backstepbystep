@@ -54,8 +54,14 @@ public class AuthorLogic {
      * @param authorEntity Objeto de AuthorEntity con los datos nuevos
      * @return Objeto de AuthorEntity con los datos nuevos y su ID.
      */
-    public AuthorEntity createAuthor(AuthorEntity authorEntity) {
+    public AuthorEntity createAuthor(AuthorEntity authorEntity) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "Inicia proceso de creación del autor");
+        if (authorEntity.getName().length() <= 2) {
+            throw new BusinessLogicException("El nombre del autor es muy corto");
+        }
+        if (authorEntity.getDescription().length() <= 2) {
+            throw new BusinessLogicException("La descripción del autor es muy corta");
+        }
         AuthorEntity newAuthorEntity = persistence.create(authorEntity);
         LOGGER.log(Level.INFO, "Termina proceso de creación del autor");
         return newAuthorEntity;

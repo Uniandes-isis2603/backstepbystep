@@ -43,7 +43,7 @@ public class EditorialEntity extends BaseEntity implements Serializable {
 
     @PodamExclude
     @OneToMany(mappedBy = "editorial")
-    private List<BookEntity> books = new ArrayList<BookEntity>();
+    private List<BookEntity> books = new ArrayList<>();
 
     /**
      * Devuelve el nombre de la editorial.

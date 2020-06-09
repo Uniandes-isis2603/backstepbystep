@@ -138,7 +138,7 @@ public class AuthorLogicTest {
      * Prueba para crear un Author.
      */
     @Test
-    public void createAuthorTest() {
+    public void createAuthorTest() throws BusinessLogicException {
         AuthorEntity newEntity = factory.manufacturePojo(AuthorEntity.class);
         AuthorEntity result = authorLogic.createAuthor(newEntity);
         Assert.assertNotNull(result);
@@ -146,6 +146,30 @@ public class AuthorLogicTest {
         Assert.assertEquals(newEntity.getId(), entity.getId());
         Assert.assertEquals(newEntity.getName(), entity.getName());
         Assert.assertEquals(newEntity.getBirthDate(), entity.getBirthDate());
+    }
+    
+    /**
+     * Prueba para crear un Autor con nombre corto.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConNombreCorto() throws BusinessLogicException {
+        AuthorEntity newEntity = factory.manufacturePojo(AuthorEntity.class);
+        newEntity.setName("Oh");
+        authorLogic.createAuthor(newEntity);
+    }
+    
+    /**
+     * Prueba para crear un Autor con descripción corta.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConDescripcionCorta() throws BusinessLogicException {
+        AuthorEntity newEntity = factory.manufacturePojo(AuthorEntity.class);
+        newEntity.setDescription("Oh");
+        authorLogic.createAuthor(newEntity);
     }
 
     /**

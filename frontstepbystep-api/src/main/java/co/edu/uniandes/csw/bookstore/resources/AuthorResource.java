@@ -63,6 +63,9 @@ public class AuthorResource {
     @Inject
     private AuthorLogic authorLogic;
 
+    private static final String MSG1 = "El recurso /authors/";
+    private static final String MSG2 = " no existe.";
+
     /**
      * Crea un nuevo autor con la informacion que se recibe en el cuerpo de la
      * petición y se regresa un objeto identico con un id auto-generado por la
@@ -71,15 +74,16 @@ public class AuthorResource {
      * @param author {@link AuthorDTO} - EL autor que se desea guardar.
      * @return JSON {@link AuthorDTO} - El autor guardado con el atributo id
      * autogenerado.
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
      */
     @POST
-    public AuthorDTO createAuthor(AuthorDTO author) {
+    public AuthorDTO createAuthor(AuthorDTO author) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "AuthorResource createAuthor: input: {0}", author);
         AuthorDTO authorDTO = new AuthorDTO(authorLogic.createAuthor(author.toEntity()));
         LOGGER.log(Level.INFO, "AuthorResource createAuthor: output: {0}", authorDTO);
         return authorDTO;
     }
-    
+
     /**
      * Crea un nuevo autor con la informacion que se recibe en el cuerpo de la
      * petición y se regresa un objeto identico con un id auto-generado por la
@@ -88,10 +92,11 @@ public class AuthorResource {
      * @param authorD {@link AuthorDetailDTO} - El autor que se desea guardar.
      * @return JSON {@link AuthorDTO} - El autor guardado con el atributo id
      * autogenerado.
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
      */
     @POST
     @Path("/authorsD")
-    public AuthorDetailDTO createAuthorDetail(AuthorDetailDTO authorD) {
+    public AuthorDetailDTO createAuthorDetail(AuthorDetailDTO authorD) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "AuthorDetailResource createAuthorDetail: input: {0}", authorD);
         AuthorDetailDTO authorDTO = new AuthorDetailDTO(authorLogic.createAuthor(authorD.toEntity()));
         LOGGER.log(Level.INFO, "AuthorDetailResource createAuthorDetail: output: {0}", authorDTO);
@@ -127,7 +132,7 @@ public class AuthorResource {
         LOGGER.log(Level.INFO, "AuthorResource getAuthor: input: {0}", authorsId);
         AuthorEntity authorEntity = authorLogic.getAuthor(authorsId);
         if (authorEntity == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         AuthorDetailDTO detailDTO = new AuthorDetailDTO(authorEntity);
         LOGGER.log(Level.INFO, "AuthorResource getAuthor: output: {0}", detailDTO);
@@ -152,7 +157,7 @@ public class AuthorResource {
         LOGGER.log(Level.INFO, "AuthorResource updateAuthor: input: authorsId: {0} , author: {1}", new Object[]{authorsId, author});
         author.setId(authorsId);
         if (authorLogic.getAuthor(authorsId) == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         AuthorDetailDTO detailDTO = new AuthorDetailDTO(authorLogic.updateAuthor(authorsId, author.toEntity()));
         LOGGER.log(Level.INFO, "AuthorResource updateAuthor: output: {0}", detailDTO);
@@ -174,7 +179,7 @@ public class AuthorResource {
     public void deleteAuthor(@PathParam("authorsId") Long authorsId) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "AuthorResource deleteAuthor: input: {0}", authorsId);
         if (authorLogic.getAuthor(authorsId) == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         authorLogic.deleteAuthor(authorsId);
         LOGGER.info("AuthorResource deleteAuthor: output: void");
@@ -195,7 +200,7 @@ public class AuthorResource {
     @Path("{authorsId: \\d+}/books")
     public Class<AuthorBooksResource> getAuthorBooksResource(@PathParam("authorsId") Long authorsId) {
         if (authorLogic.getAuthor(authorsId) == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         return AuthorBooksResource.class;
     }

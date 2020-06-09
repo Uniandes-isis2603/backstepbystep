@@ -40,6 +40,9 @@ public class OrganizationResource {
     @Inject
     private OrganizationLogic organizationLogic;
 
+    private static final String MSG1 = "El recurso /organizations/";
+    private static final String MSG2 = " no existe.";
+
     /**
      * Crea una nueva organization con la informacion que se recibe en el cuerpo
      * de la petición y se regresa un objeto identico con un id auto-generado
@@ -90,7 +93,7 @@ public class OrganizationResource {
         LOGGER.log(Level.INFO, "OrganizationResource getOrganization: input: {0}", organizationsId);
         OrganizationEntity organizationEntity = organizationLogic.getOrganization(organizationsId);
         if (organizationEntity == null) {
-            throw new WebApplicationException("El recurso /organizations/" + organizationsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + organizationsId + MSG2, 404);
         }
         OrganizationDetailDTO organizationDetailDTO = new OrganizationDetailDTO(organizationEntity);
         LOGGER.log(Level.INFO, "OrganizationResource getOrganization: output: {0}", organizationDetailDTO);
@@ -116,7 +119,7 @@ public class OrganizationResource {
         LOGGER.log(Level.INFO, "OrganizationResource updateOrganization: input: id: {0} , organization: {1}", new Object[]{organizationsId, organization});
         organization.setId(organizationsId);
         if (organizationLogic.getOrganization(organizationsId) == null) {
-            throw new WebApplicationException("El recurso /organizations/" + organizationsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + organizationsId + MSG2, 404);
         }
         OrganizationDetailDTO detailDTO = new OrganizationDetailDTO(organizationLogic.updateOrganization(organizationsId, organization.toEntity()));
         LOGGER.log(Level.INFO, "OrganizationResource updateOrganization: output: {0}", detailDTO);
@@ -140,7 +143,7 @@ public class OrganizationResource {
     public void deleteOrganization(@PathParam("organizationsId") Long organizationsId) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "OrganizationResource deleteOrganization: input: {0}", organizationsId);
         if (organizationLogic.getOrganization(organizationsId) == null) {
-            throw new WebApplicationException("El recurso /organizations/" + organizationsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + organizationsId + MSG2, 404);
         }
         organizationLogic.deleteOrganization(organizationsId);
         LOGGER.info("OrganizationResource deleteOrganization: output: void");

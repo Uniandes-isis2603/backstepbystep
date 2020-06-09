@@ -62,6 +62,9 @@ public class BookAuthorsResource {
     @Inject
     private AuthorLogic authorLogic;
 
+    private static final String MSG1 = "El recurso /authors/";
+    private static final String MSG2 = " no existe.";
+
     /**
      * Asocia un autor existente con un libro existente
      *
@@ -76,7 +79,7 @@ public class BookAuthorsResource {
     public AuthorDetailDTO addAuthor(@PathParam("booksId") Long booksId, @PathParam("authorsId") Long authorsId) {
         LOGGER.log(Level.INFO, "BookAuthorsResource addAuthor: input: booksId {0} , authorsId {1}", new Object[]{booksId, authorsId});
         if (authorLogic.getAuthor(authorsId) == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         AuthorDetailDTO detailDTO = new AuthorDetailDTO(bookAuthorLogic.addAuthor(booksId, authorsId));
         LOGGER.log(Level.INFO, "BookAuthorsResource addAuthor: output: {0}", detailDTO);
@@ -113,7 +116,7 @@ public class BookAuthorsResource {
     public AuthorDetailDTO getAuthor(@PathParam("booksId") Long booksId, @PathParam("authorsId") Long authorsId) {
         LOGGER.log(Level.INFO, "BookAuthorsResource getAuthor: input: booksId {0} , authorsId {1}", new Object[]{booksId, authorsId});
         if (authorLogic.getAuthor(authorsId) == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         AuthorDetailDTO detailDTO = new AuthorDetailDTO(bookAuthorLogic.getAuthor(booksId, authorsId));
         LOGGER.log(Level.INFO, "BookAuthorsResource getAuthor: output: {0}", detailDTO);
@@ -137,7 +140,7 @@ public class BookAuthorsResource {
         LOGGER.log(Level.INFO, "BookAuthorsResource replaceAuthors: input: booksId {0} , authors {1}", new Object[]{booksId, authors});
         for (AuthorDetailDTO author : authors) {
             if (authorLogic.getAuthor(author.getId()) == null) {
-                throw new WebApplicationException("El recurso /authors/" + author.getId() + " no existe.", 404);
+                throw new WebApplicationException(MSG1 + author.getId() + MSG2, 404);
             }
         }
         List<AuthorDetailDTO> lista = authorsListEntity2DTO(bookAuthorLogic.replaceAuthors(booksId, authorsListDTO2Entity(authors)));
@@ -158,7 +161,7 @@ public class BookAuthorsResource {
     public void removeAuthor(@PathParam("booksId") Long booksId, @PathParam("authorsId") Long authorsId) {
         LOGGER.log(Level.INFO, "BookAuthorsResource removeAuthor: input: booksId {0} , authorsId {1}", new Object[]{booksId, authorsId});
         if (authorLogic.getAuthor(authorsId) == null) {
-            throw new WebApplicationException("El recurso /authors/" + authorsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + authorsId + MSG2, 404);
         }
         bookAuthorLogic.removeAuthor(booksId, authorsId);
         LOGGER.info("BookAuthorsResource removeAuthor: output: void");

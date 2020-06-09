@@ -65,9 +65,11 @@ public class BookLogicTest {
     @Inject
     private UserTransaction utx;
 
-    private List<BookEntity> data = new ArrayList<BookEntity>();
+    private List<BookEntity> bookData = new ArrayList<>();
 
     private List<EditorialEntity> editorialData = new ArrayList();
+    
+    private List<AuthorEntity> authorData = new ArrayList();
 
     /**
      * @return Devuelve el jar que Arquillian va a desplegar en Payara embebido.
@@ -128,12 +130,16 @@ public class BookLogicTest {
             entity.setEditorial(editorialData.get(0));
 
             em.persist(entity);
-            data.add(entity);
+            bookData.add(entity);
         }
-        AuthorEntity author = factory.manufacturePojo(AuthorEntity.class);
-        em.persist(author);
-        author.getBooks().add(data.get(1));
-        data.get(1).getAuthors().add(author);
+        for (int i = 0; i < 3; i++) {
+            AuthorEntity entity = factory.manufacturePojo(AuthorEntity.class);
+            em.persist(entity);
+            authorData.add(entity);
+        }
+        em.persist(authorData.get(0));
+        authorData.get(0).getBooks().add(bookData.get(1));
+        bookData.get(1).getAuthors().add(authorData.get(0));
     }
 
     /**
@@ -145,6 +151,7 @@ public class BookLogicTest {
     public void createBookTest() throws BusinessLogicException {
         BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
         newEntity.setEditorial(editorialData.get(0));
+        newEntity.setAuthors(authorData);
         BookEntity result = bookLogic.createBook(newEntity);
         Assert.assertNotNull(result);
         BookEntity entity = em.find(BookEntity.class, result.getId());
@@ -190,7 +197,7 @@ public class BookLogicTest {
     public void createBookTestConISBNExistente() throws BusinessLogicException {
         BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
         newEntity.setEditorial(editorialData.get(0));
-        newEntity.setIsbn(data.get(0).getIsbn());
+        newEntity.setIsbn(bookData.get(0).getIsbn());
         bookLogic.createBook(newEntity);
     }
 
@@ -219,6 +226,67 @@ public class BookLogicTest {
         newEntity.setEditorial(null);
         bookLogic.createBook(newEntity);
     }
+    
+    /**
+     * Prueba para crear un Book con nombre corto.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConNombreCorto() throws BusinessLogicException {
+        BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
+        newEntity.setName("Odisea");
+        bookLogic.createBook(newEntity);
+    }
+    
+    /**
+     * Prueba para crear un Book con descripción corta.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConDescripcionCorta() throws BusinessLogicException {
+        BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
+        newEntity.setDescription("Curioso");
+        bookLogic.createBook(newEntity);
+    }
+    
+    /**
+     * Prueba para crear un Book sin imagen.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConImagenVacia() throws BusinessLogicException {
+        BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
+        newEntity.setImage("");
+        bookLogic.createBook(newEntity);
+    }
+    
+    /**
+     * Prueba para crear un Book con lista autores en null.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConNullListAuthor() throws BusinessLogicException {
+        BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
+        newEntity.setAuthors(null);
+        bookLogic.createBook(newEntity);
+    }
+    
+    /**
+     * Prueba para crear un Book con un autor null.
+     *
+     * @throws co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException
+     */
+    @Test(expected = BusinessLogicException.class)
+    public void createBookConNullAuthor() throws BusinessLogicException {
+        BookEntity newEntity = factory.manufacturePojo(BookEntity.class);
+        authorData.add(null);
+        newEntity.setAuthors(authorData);
+        bookLogic.createBook(newEntity);
+    }
 
     /**
      * Prueba para consultar la lista de Books.
@@ -226,10 +294,10 @@ public class BookLogicTest {
     @Test
     public void getBooksTest() {
         List<BookEntity> list = bookLogic.getBooks();
-        Assert.assertEquals(data.size(), list.size());
+        Assert.assertEquals(bookData.size(), list.size());
         for (BookEntity entity : list) {
             boolean found = false;
-            for (BookEntity storedEntity : data) {
+            for (BookEntity storedEntity : bookData) {
                 if (entity.getId().equals(storedEntity.getId())) {
                     found = true;
                 }
@@ -243,7 +311,7 @@ public class BookLogicTest {
      */
     @Test
     public void getBookTest() {
-        BookEntity entity = data.get(0);
+        BookEntity entity = bookData.get(0);
         BookEntity resultEntity = bookLogic.getBook(entity.getId());
         Assert.assertNotNull(resultEntity);
         Assert.assertEquals(entity.getId(), resultEntity.getId());
@@ -260,7 +328,7 @@ public class BookLogicTest {
      */
     @Test
     public void updateBookTest() throws BusinessLogicException {
-        BookEntity entity = data.get(0);
+        BookEntity entity = bookData.get(0);
         BookEntity pojoEntity = factory.manufacturePojo(BookEntity.class);
         pojoEntity.setId(entity.getId());
         bookLogic.updateBook(pojoEntity.getId(), pojoEntity);
@@ -279,7 +347,7 @@ public class BookLogicTest {
      */
     @Test(expected = BusinessLogicException.class)
     public void updateBookConISBNInvalidoTest() throws BusinessLogicException {
-        BookEntity entity = data.get(0);
+        BookEntity entity = bookData.get(0);
         BookEntity pojoEntity = factory.manufacturePojo(BookEntity.class);
         pojoEntity.setIsbn("");
         pojoEntity.setId(entity.getId());
@@ -293,7 +361,7 @@ public class BookLogicTest {
      */
     @Test(expected = BusinessLogicException.class)
     public void updateBookConISBNInvalidoTest2() throws BusinessLogicException {
-        BookEntity entity = data.get(0);
+        BookEntity entity = bookData.get(0);
         BookEntity pojoEntity = factory.manufacturePojo(BookEntity.class);
         pojoEntity.setIsbn(null);
         pojoEntity.setId(entity.getId());
@@ -307,7 +375,7 @@ public class BookLogicTest {
      */
     @Test
     public void deleteBookTest() throws BusinessLogicException {
-        BookEntity entity = data.get(0);
+        BookEntity entity = bookData.get(0);
         bookLogic.deleteBook(entity.getId());
         BookEntity deleted = em.find(BookEntity.class, entity.getId());
         Assert.assertNull(deleted);
@@ -320,7 +388,7 @@ public class BookLogicTest {
      */
     @Test(expected = BusinessLogicException.class)
     public void deleteBookWithAuthorTest() throws BusinessLogicException {
-        BookEntity entity = data.get(1);
+        BookEntity entity = bookData.get(1);
         bookLogic.deleteBook(entity.getId());
     }
 }

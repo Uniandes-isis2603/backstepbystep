@@ -58,6 +58,10 @@ public class ReviewResource {
 
     @Inject
     private ReviewLogic reviewLogic;
+    
+    private static final String MSG1 = "El recurso /books/";
+    private static final String MSG2 = "/reviews/"; 
+    private static final String MSG3 = " no existe."; 
 
     /**
      * Crea una nueva reseña con la informacion que se recibe en el cuerpo de la
@@ -112,7 +116,7 @@ public class ReviewResource {
         LOGGER.log(Level.INFO, "ReviewResource getReview: input: {0}", reviewsId);
         ReviewEntity entity = reviewLogic.getReview(booksId, reviewsId);
         if (entity == null) {
-            throw new WebApplicationException("El recurso /books/" + booksId + "/reviews/" + reviewsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + booksId + MSG2 + reviewsId + MSG3, 404);
         }
         ReviewDTO reviewDTO = new ReviewDTO(entity);
         LOGGER.log(Level.INFO, "ReviewResource getReview: output: {0}", reviewDTO);
@@ -141,7 +145,7 @@ public class ReviewResource {
         }
         ReviewEntity entity = reviewLogic.getReview(booksId, reviewsId);
         if (entity == null) {
-            throw new WebApplicationException("El recurso /books/" + booksId + "/reviews/" + reviewsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + booksId + MSG2 + reviewsId + MSG3, 404);
 
         }
         ReviewDTO reviewDTO = new ReviewDTO(reviewLogic.updateReview(booksId, review.toEntity()));
@@ -165,7 +169,7 @@ public class ReviewResource {
     public void deleteReview(@PathParam("booksId") Long booksId, @PathParam("reviewsId") Long reviewsId) throws BusinessLogicException {
         ReviewEntity entity = reviewLogic.getReview(booksId, reviewsId);
         if (entity == null) {
-            throw new WebApplicationException("El recurso /books/" + booksId + "/reviews/" + reviewsId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + booksId + MSG2 + reviewsId + MSG3, 404);
         }
         reviewLogic.deleteReview(booksId, reviewsId);
     }
@@ -181,7 +185,7 @@ public class ReviewResource {
      * @return la lista de reseñas en forma DTO (json)
      */
     private List<ReviewDTO> listEntity2DTO(List<ReviewEntity> entityList) {
-        List<ReviewDTO> list = new ArrayList<ReviewDTO>();
+        List<ReviewDTO> list = new ArrayList<>();
         for (ReviewEntity entity : entityList) {
             list.add(new ReviewDTO(entity));
         }

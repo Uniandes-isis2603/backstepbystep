@@ -26,6 +26,7 @@ package co.edu.uniandes.csw.bookstore.ejb;
 import co.edu.uniandes.csw.bookstore.entities.AuthorEntity;
 import co.edu.uniandes.csw.bookstore.entities.BookEntity;
 import co.edu.uniandes.csw.bookstore.exceptions.BusinessLogicException;
+import co.edu.uniandes.csw.bookstore.persistence.AuthorPersistence;
 import co.edu.uniandes.csw.bookstore.persistence.BookPersistence;
 import co.edu.uniandes.csw.bookstore.persistence.EditorialPersistence;
 import java.util.List;
@@ -50,6 +51,9 @@ public class BookLogic {
     @Inject
     private EditorialPersistence editorialPersistence;
 
+    @Inject
+    private AuthorPersistence authorPersistence;
+
     /**
      * Guardar un nuevo libro
      *
@@ -63,11 +67,28 @@ public class BookLogic {
         if (bookEntity.getEditorial() == null || editorialPersistence.find(bookEntity.getEditorial().getId()) == null) {
             throw new BusinessLogicException("La editorial es inválida");
         }
+        if (bookEntity.getAuthors() == null) {
+            throw new BusinessLogicException("Autor(es) inválido(s)");
+        }
+        for (AuthorEntity author: bookEntity.getAuthors()) {
+            if (author == null || authorPersistence.find(author.getId()) == null) {
+                throw new BusinessLogicException("Autor(es) inválido(s)");
+            }
+        }
         if (!validateISBN(bookEntity.getIsbn())) {
             throw new BusinessLogicException("El ISBN es inválido");
         }
         if (persistence.findByISBN(bookEntity.getIsbn()) != null) {
             throw new BusinessLogicException("El ISBN ya existe");
+        }
+        if (bookEntity.getName().length() <= 8) {
+            throw new BusinessLogicException("El nombre del libro es muy corto");
+        }
+        if (bookEntity.getDescription().length() <= 8) {
+            throw new BusinessLogicException("La descripción del libro es muy corta");
+        }
+        if (bookEntity.getImage().isEmpty()) {
+            throw new BusinessLogicException("No hay ninguna imagen");
         }
         persistence.create(bookEntity);
         LOGGER.log(Level.INFO, "Termina proceso de creación del libro");

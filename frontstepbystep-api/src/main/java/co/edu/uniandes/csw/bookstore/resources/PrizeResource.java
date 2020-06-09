@@ -67,6 +67,9 @@ public class PrizeResource {
     @Inject
     private OrganizationLogic organizationLogic; // Variable para acceder a la lógica de la aplicación. Es una inyección de dependencias.
 
+    private static final String MSG1 = "El recurso /prizes/";
+    private static final String MSG2 = " no existe.";
+
     /**
      * Crea un nuevo premio con la informacion que se recibe en el cuerpo de la
      * petición y se regresa un objeto identico con un id auto-generado por la
@@ -116,7 +119,7 @@ public class PrizeResource {
         LOGGER.log(Level.INFO, "PrizeResource getPrize: input: {0}", prizesId);
         PrizeEntity prizeEntity = prizeLogic.getPrize(prizesId);
         if (prizeEntity == null) {
-            throw new WebApplicationException("El recurso /prizes/" + prizesId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + prizesId + MSG2, 404);
         }
         PrizeDetailDTO prizeDetailDTO = new PrizeDetailDTO(prizeEntity);
         LOGGER.log(Level.INFO, "PrizeResource getPrize: output: {0}", prizeDetailDTO);
@@ -143,7 +146,7 @@ public class PrizeResource {
         LOGGER.log(Level.INFO, "PrizeResource updatePrize: input: prizesId: {0} , prize: {1}", new Object[]{prizesId, prize});
         prize.setId(prizesId);
         if (prizeLogic.getPrize(prizesId) == null) {
-            throw new WebApplicationException("El recurso /prizes/" + prizesId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + prizesId + MSG2, 404);
         }
         PrizeDetailDTO detailDTO = new PrizeDetailDTO(prizeLogic.updatePrize(prizesId, prize.toEntity()));
         LOGGER.log(Level.INFO, "PrizeResource updatePrize: output: {0}", detailDTO);
@@ -165,7 +168,7 @@ public class PrizeResource {
     public void deletePrize(@PathParam("prizesId") Long prizesId) throws BusinessLogicException {
         LOGGER.log(Level.INFO, "PrizeResource deletePrize: input: {0}", prizesId);
         if (prizeLogic.getPrize(prizesId) == null) {
-            throw new WebApplicationException("El recurso /prizes/" + prizesId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + prizesId + MSG2, 404);
         }
         prizeLogic.deletePrize(prizesId);
         LOGGER.info("PrizeResource deletePrize: output: void");
@@ -188,7 +191,7 @@ public class PrizeResource {
     @Path("{prizesId: \\d+}/author")
     public Class<PrizeAuthorResource> getPrizeAuthorResource(@PathParam("prizesId") Long prizesId) {
         if (prizeLogic.getPrize(prizesId) == null) {
-            throw new WebApplicationException("El recurso /prizes/" + prizesId + " no existe.", 404);
+            throw new WebApplicationException(MSG1 + prizesId + MSG2, 404);
         }
         return PrizeAuthorResource.class;
     }
